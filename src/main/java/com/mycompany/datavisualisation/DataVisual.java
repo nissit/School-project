@@ -1,8 +1,13 @@
 package com.mycompany.datavisualisation;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class DataVisual extends JFrame {
     private JButton jButton1;
@@ -67,7 +72,6 @@ public class DataVisual extends JFrame {
 
         jInternalFrame1.setVisible(true);
 
-        // Setting up the layout
         GroupLayout jInternalFrame1Layout = new GroupLayout(jInternalFrame1.getContentPane());
         jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
         jInternalFrame1Layout.setHorizontalGroup(
@@ -134,11 +138,31 @@ public class DataVisual extends JFrame {
     }
 
     private void jButton2ActionPerformed(ActionEvent evt) {
-        // Handle Preview Data button click
+        // Display collected data inside data.csv file in the jInternalFrame1
+        displayData();
     }
 
     private void jButton3ActionPerformed(ActionEvent evt) {
         // Handle Pie-Chart button click
+    }
+
+    private void displayData() {
+        // Read data from data.csv and display it in a tabular format inside jInternalFrame1
+        try (BufferedReader br = new BufferedReader(new FileReader("data.csv"))) {
+            DefaultTableModel model = new DefaultTableModel();
+            model.addColumn("Name");
+            model.addColumn("Value");
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                model.addRow(data);
+            }
+            JTable table = new JTable(model);
+            JScrollPane scrollPane = new JScrollPane(table);
+            jInternalFrame1.setContentPane(scrollPane);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
