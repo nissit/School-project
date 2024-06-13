@@ -1,18 +1,8 @@
 package com.mycompany.datavisualisation;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.DefaultPieDataset;
-
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 
 public class DataVisual extends JFrame {
     private JButton jButton1;
@@ -142,80 +132,20 @@ public class DataVisual extends JFrame {
     }
 
     private void jButton1ActionPerformed(ActionEvent evt) {
-        // Code to display the form when "Add Data" button is clicked
         AddDataForm addDataForm = new AddDataForm();
         addDataForm.setVisible(true);
     }
 
     private void jButton2ActionPerformed(ActionEvent evt) {
-        // Display collected data inside data.csv file in the jInternalFrame1
-        displayData();
+        DataDisplay.displayData(jInternalFrame1);
     }
 
     private void jButton3ActionPerformed(ActionEvent evt) {
-        // Display pie chart of data from data.csv
-        displayPieChart();
+        PieChartDisplay.displayPieChart(jInternalFrame1);
     }
 
     private void jButton4ActionPerformed(ActionEvent evt) {
-        // Display bar chart of data from data.csv
-        displayBarChart();
-    }
-
-    private void displayData() {
-        // Read data from data.csv and display it in a tabular format inside jInternalFrame1
-        try (BufferedReader br = new BufferedReader(new FileReader("data.csv"))) {
-            DefaultTableModel model = new DefaultTableModel();
-            model.addColumn("Name");
-            model.addColumn("Value");
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
-                model.addRow(data);
-            }
-            JTable table = new JTable(model);
-            JScrollPane scrollPane = new JScrollPane(table);
-            jInternalFrame1.setContentPane(scrollPane);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void displayPieChart() {
-        // Read data from data.csv and create a pie chart
-        DefaultPieDataset dataset = new DefaultPieDataset();
-        try (BufferedReader br = new BufferedReader(new FileReader("data.csv"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
-                dataset.setValue(data[0], Double.parseDouble(data[1]));
-            }
-        } catch (IOException | NumberFormatException e) {
-            e.printStackTrace();
-        }
-
-        JFreeChart chart = ChartFactory.createPieChart("Data Pie Chart", dataset, true, true, false);
-        ChartPanel chartPanel = new ChartPanel(chart);
-        jInternalFrame1.setContentPane(chartPanel);
-    }
-
-    private void displayBarChart() {
-        // Read data from data.csv and create a bar chart
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        try (BufferedReader br = new BufferedReader(new FileReader("data.csv"))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
-                dataset.addValue
-                (Double.parseDouble(data[1]), "Value", data[0]);
-            }
-        } catch (IOException | NumberFormatException e) {
-            e.printStackTrace();
-        }
-
-        JFreeChart chart = ChartFactory.createBarChart("Data Bar Chart", "Name", "Value", dataset);
-        ChartPanel chartPanel = new ChartPanel(chart);
-        jInternalFrame1.setContentPane(chartPanel);
+        BarChartDisplay.displayBarChart(jInternalFrame1);
     }
 
     public static void main(String[] args) {
