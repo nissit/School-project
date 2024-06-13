@@ -3,11 +3,11 @@ package com.mycompany.datavisualisation;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-// import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -72,6 +72,11 @@ public class DataVisual extends JFrame {
         });
 
         jButton4.setText("Bar Chart");
+        jButton4.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("Reset");
 
@@ -152,6 +157,11 @@ public class DataVisual extends JFrame {
         displayPieChart();
     }
 
+    private void jButton4ActionPerformed(ActionEvent evt) {
+        // Display bar chart of data from data.csv
+        displayBarChart();
+    }
+
     private void displayData() {
         // Read data from data.csv and display it in a tabular format inside jInternalFrame1
         try (BufferedReader br = new BufferedReader(new FileReader("data.csv"))) {
@@ -185,6 +195,25 @@ public class DataVisual extends JFrame {
         }
 
         JFreeChart chart = ChartFactory.createPieChart("Data Pie Chart", dataset, true, true, false);
+        ChartPanel chartPanel = new ChartPanel(chart);
+        jInternalFrame1.setContentPane(chartPanel);
+    }
+
+    private void displayBarChart() {
+        // Read data from data.csv and create a bar chart
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        try (BufferedReader br = new BufferedReader(new FileReader("data.csv"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                dataset.addValue
+                (Double.parseDouble(data[1]), "Value", data[0]);
+            }
+        } catch (IOException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        JFreeChart chart = ChartFactory.createBarChart("Data Bar Chart", "Name", "Value", dataset);
         ChartPanel chartPanel = new ChartPanel(chart);
         jInternalFrame1.setContentPane(chartPanel);
     }
