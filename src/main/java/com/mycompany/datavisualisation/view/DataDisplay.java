@@ -1,4 +1,4 @@
-package com.mycompany.datavisualisation;
+package com.mycompany.datavisualisation.view;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
