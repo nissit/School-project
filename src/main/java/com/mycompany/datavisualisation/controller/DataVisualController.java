@@ -34,11 +34,11 @@ public class DataVisualController {
     }
     
     public void handlePieChartButtonClick() {
-        PieChartDisplay.displayPieChart(view.jInternalFrame1);
+        PieChartDisplay.displayPieChart(view.jInternalFrame1, model);
     }
     
     public void handleBarChartButtonClick() {
-        BarChartDisplay.displayBarChart(view.jInternalFrame1);
+        BarChartDisplay.displayBarChart(view.jInternalFrame1, model);
     }
     
 }

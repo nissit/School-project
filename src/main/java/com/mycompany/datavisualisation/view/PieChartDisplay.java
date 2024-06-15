@@ -19,20 +19,27 @@ public class PieChartDisplay {
         for (DataPoint point : data) {
             dataset.setValue(point.getName(), point.getValue());
         }
-
+    
         // Create the pie chart
         JFreeChart chart = ChartFactory.createPieChart(
-                "Data Visualization",
-                dataset,
-                true,
-                true,
-                false
+            "Data Visualization",
+            dataset,
+            true,
+            true,
+            false
         );
-
-        // Add the chart to the internal frame
+    
+        // Add the chart to a new JPanel with FlowLayout
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(600, 400));
-        internalFrame.getContentPane().add(chartPanel, BorderLayout.CENTER);
+        JPanel contentPanel = new JPanel();
+        contentPanel.add(chartPanel);
+    
+        // Add the content panel to the JInternalFrame
+        internalFrame.getContentPane().add(contentPanel, BorderLayout.CENTER);
+        internalFrame.setPreferredSize(new Dimension(650, 450));
+        internalFrame.pack();
         internalFrame.setVisible(true);
     }
+    
 }
