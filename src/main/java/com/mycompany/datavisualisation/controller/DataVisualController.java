@@ -1,44 +1,44 @@
 package com.mycompany.datavisualisation.controller;
 
+import com.mycompany.datavisualisation.model.DataPoint;
 import com.mycompany.datavisualisation.model.DataVisualModel;
 import com.mycompany.datavisualisation.view.AddDataForm;
-import com.mycompany.datavisualisation.view.BarChartDisplay;
-import com.mycompany.datavisualisation.view.DataDisplay;
 import com.mycompany.datavisualisation.view.DataVisualView;
-import com.mycompany.datavisualisation.view.PieChartDisplay;
 
-import javax.swing.*;
+import java.io.File;
+import java.util.List;
 
 public class DataVisualController {
-    private DataVisualView view;
     private DataVisualModel model;
+    private DataVisualView view;
 
     public DataVisualController() {
-        model = new DataVisualModel();
+        model = new DataVisualModel(this);
         view = new DataVisualView(this, model);
-        view.setVisible(true);
+        AddDataForm addDataForm = new AddDataForm(model);
+
+        // Read manual data and display it
+        List<DataPoint> manualData = model.readManualData();
+        handleManualDataEntry(manualData);
     }
 
+    public DataVisualModel getModel() {
+        return model;
+    }
 
     public DataVisualView getView() {
         return view;
     }
 
-    public void handleAddDataButtonClick() {
-        AddDataForm addDataForm = new AddDataForm(this);
-        addDataForm.setVisible(true);
+    public void handleManualDataEntry(List<DataPoint> data) {
+        model.setData(data);
+        view.displayData(data, "Manual Data");
     }
 
-    public void handlePreviewDataButtonClick() {
-        DataDisplay.displayData(view.jInternalFrame1);
+    public void handleImportedData(File selectedFile) {
+        List<List<DataPoint>> importedData = model.readImportedData();
+        for (List<DataPoint> data : importedData) {
+            view.displayData(data, "Imported Data");
+        }
     }
-    
-    public void handlePieChartButtonClick() {
-        PieChartDisplay.displayPieChart(view.jInternalFrame1, model);
-    }
-    
-    public void handleBarChartButtonClick() {
-        BarChartDisplay.displayBarChart(view.jInternalFrame1, model);
-    }
-    
 }

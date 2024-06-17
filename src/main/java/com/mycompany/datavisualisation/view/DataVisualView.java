@@ -1,84 +1,99 @@
 package com.mycompany.datavisualisation.view;
 
 import com.mycompany.datavisualisation.controller.DataVisualController;
+import com.mycompany.datavisualisation.model.DataPoint;
 import com.mycompany.datavisualisation.model.DataVisualModel;
 
 import javax.swing.*;
-
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataVisualView extends JFrame {
-    private JButton jButton1;
-    private JButton jButton2;
-    private JButton jButton3;
-    private JButton jButton4;
-    private JButton jButton5;
-    private JLabel jLabel1;
-    private JLabel jLabel2;
-    public JInternalFrame jInternalFrame1;
     private DataVisualController controller;
     private DataVisualModel model;
+    private JTabbedPane tabbedPane;
+    private BarChartDisplay barChartDisplay;
+    private PieChartDisplay pieChartDisplay;
+    private DataDisplay dataDisplay;
+    private JPanel manualDataPanel;
+    private JTextField nameField;
+    private JTextField valueField;
+    private JButton addDataButton;
+    private JButton importDataButton;
 
     public DataVisualView(DataVisualController controller, DataVisualModel model) {
         this.controller = controller;
         this.model = model;
-        initComponents();
+        initUI();
     }
 
-    private void initComponents() {
-        setTitle("Data Visualisation");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    private void initUI() {
+        setTitle("Data Visualization");
         setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-    
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-    
-        // Top panel with buttons
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        jButton1 = new JButton("Add Data");
-        jButton1.addActionListener(e -> jButton1ActionPerformed(e));
-        jButton2 = new JButton("Preview Data");
-        jButton2.addActionListener(e -> jButton2ActionPerformed(e));
-        jButton3 = new JButton("Pie Chart");
-        jButton3.addActionListener(e -> jButton3ActionPerformed(e));
-        jButton4 = new JButton("Bar Chart");
-        jButton4.addActionListener(e -> jButton4ActionPerformed(e));
-        topPanel.add(jButton1);
-        topPanel.add(jButton2);
-        topPanel.add(jButton3);
-        topPanel.add(jButton4);
-    
-        // Internal frame to display data/charts
-        jInternalFrame1 = new JInternalFrame("Data/Charts", true, true, true, true);
-        jInternalFrame1.setSize(600, 400);
-        jInternalFrame1.setLocation(100, 100);
-        jInternalFrame1.setVisible(true);
-    
-        // Add components to the main panel
-        mainPanel.add(topPanel, BorderLayout.NORTH);
-        mainPanel.add(jInternalFrame1, BorderLayout.CENTER);
-    
-        getContentPane().add(mainPanel, BorderLayout.CENTER);
-    }
-    
 
-    private void jButton1ActionPerformed(ActionEvent evt) {
-        controller.handleAddDataButtonClick();
+        tabbedPane = new JTabbedPane();
+        barChartDisplay = new BarChartDisplay(model);
+        pieChartDisplay = new PieChartDisplay(model);
+        dataDisplay = new DataDisplay(model);
+
+        tabbedPane.addTab("Bar Chart", barChartDisplay);
+        tabbedPane.addTab("Pie Chart", pieChartDisplay);
+        tabbedPane.addTab("Data", dataDisplay);
+
+        manualDataPanel = createManualDataPanel();
+        tabbedPane.addTab("Manual Data", manualDataPanel);
+
+        getContentPane().add(tabbedPane, BorderLayout.CENTER);
     }
 
-    private void jButton2ActionPerformed(ActionEvent evt) {
-        controller.handlePreviewDataButtonClick();
+    private JPanel createManualDataPanel() {
+        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel nameLabel = new JLabel("Name:");
+        nameField = new JTextField(10);
+        JLabel valueLabel = new JLabel("Value:");
+        valueField = new JTextField(10);
+        addDataButton = new JButton("Add Data");
+        addDataButton.setPreferredSize(new Dimension(100, 30));
+        addDataButton.addActionListener(e -> {
+            String name = nameField.getText();
+            double value = Double.parseDouble(valueField.getText());
+            List<DataPoint> manualData = new ArrayList<>();
+            manualData.add(new DataPoint(name, value));
+            controller.handleManualDataEntry(manualData);
+            nameField.setText("");
+            valueField.setText("");
+        });
+        importDataButton = new JButton("Import Data");
+        importDataButton.setPreferredSize(new Dimension(100, 30));
+        importDataButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Select CSV file");
+            int result = fileChooser.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                controller.handleImportedData(selectedFile);
+            }
+        });
+
+        panel.add(nameLabel);
+        panel.add(nameField);
+        panel.add(valueLabel);
+        panel.add(valueField);
+        panel.add(addDataButton);
+        panel.add(importDataButton);
+
+        return panel;
     }
 
-    private void jButton3ActionPerformed(ActionEvent evt) {
-        controller.handlePieChartButtonClick();
-    }
-
-    private void jButton4ActionPerformed(ActionEvent evt) {
-        controller.handleBarChartButtonClick();
+    public void displayData(List<DataPoint> data, String title) {
+        barChartDisplay.updateChart(data, title);
+        pieChartDisplay.updateChart(data, title);
+        dataDisplay.updateTable(data, title);
     }
 }

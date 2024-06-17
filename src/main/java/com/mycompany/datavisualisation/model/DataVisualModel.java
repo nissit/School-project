@@ -1,54 +1,69 @@
 package com.mycompany.datavisualisation.model;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
+import com.mycompany.datavisualisation.controller.DataVisualController;
+
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DataVisualModel {
     private List<DataPoint> data;
+    private DataVisualController controller;
 
-    public DataVisualModel() {
+    public DataVisualModel(DataVisualController controller) {
+        this.controller = controller;
         data = new ArrayList<>();
-        loadData();
-    }
-
-    private void loadData() {
-        try (BufferedReader reader = new BufferedReader(new FileReader("data.csv"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 2) {
-                    String name = parts[0];
-                    double value = Double.parseDouble(parts[1]);
-                    data.add(new DataPoint(name, value));
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void addData(String name, double value) {
         data.add(new DataPoint(name, value));
-        saveData();
+        controller.getView().displayData(data, "Data");
     }
 
-    private void saveData() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("data.csv"))) {
-            for (DataPoint point : data) {
-                writer.write(point.getName() + "," + point.getValue());
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void setData(List<DataPoint> data) {
+        this.data = data;
     }
 
     public List<DataPoint> getData() {
         return data;
+    }
+
+    public List<List<DataPoint>> readImportedData() {
+        List<List<DataPoint>> importedData = new ArrayList<>();
+        try {
+            Path importedDataPath = Paths.get("./importedData");
+            List<Path> csvFiles = Files.list(importedDataPath)
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".csv"))
+                    .collect(Collectors.toList());
+
+            for (Path csvFile : csvFiles) {
+                List<DataPoint> fileData = Files.lines(csvFile)
+                        .skip(1) // Skip header row
+                        .map(line -> {
+                            String[] parts = line.split(",");
+                            return new DataPoint(parts[0], Double.parseDouble(parts[1]));
+                        })
+                        .collect(Collectors.toList());
+                importedData.add(fileData);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return importedData;
+    }
+
+    public List<DataPoint> readManualData() {
+        // Placeholder for now, i'll need to implement this method
+        // to read the manual data from the AddDataForm or a similar source
+        List<DataPoint> manualData = new ArrayList<>();
+        manualData.add(new DataPoint("Manual Data 1", 10.0));
+        manualData.add(new DataPoint("Manual Data 2", 20.0));
+        return manualData;
     }
 }

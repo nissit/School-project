@@ -5,41 +5,44 @@ import com.mycompany.datavisualisation.model.DataVisualModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.List;
 
-public class PieChartDisplay {
-    public static void displayPieChart(JInternalFrame internalFrame, DataVisualModel model) {
-        // Create the pie chart dataset
-        DefaultPieDataset dataset = new DefaultPieDataset();
-        List<DataPoint> data = model.getData();
-        for (DataPoint point : data) {
-            dataset.setValue(point.getName(), point.getValue());
-        }
-    
-        // Create the pie chart
-        JFreeChart chart = ChartFactory.createPieChart(
-            "Data Visualization",
-            dataset,
-            true,
-            true,
-            false
-        );
-    
-        // Add the chart to a new JPanel with FlowLayout
-        ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new Dimension(600, 400));
-        JPanel contentPanel = new JPanel();
-        contentPanel.add(chartPanel);
-    
-        // Add the content panel to the JInternalFrame
-        internalFrame.getContentPane().add(contentPanel, BorderLayout.CENTER);
-        internalFrame.setPreferredSize(new Dimension(650, 450));
-        internalFrame.pack();
-        internalFrame.setVisible(true);
+public class PieChartDisplay extends JPanel {
+    private DataVisualModel model;
+    private JFreeChart chart;
+    private ChartPanel chartPanel;
+
+    public PieChartDisplay(DataVisualModel model) {
+        this.model = model;
+        initUI();
     }
-    
+
+    private void initUI() {
+        chart = createChart();
+        chartPanel = new ChartPanel(chart);
+        add(chartPanel);
+    }
+
+    private JFreeChart createChart() {
+        JFreeChart pieChart = ChartFactory.createPieChart(
+                "Pie Chart",
+                new DefaultPieDataset(),
+                true, true, false);
+        return pieChart;
+    }
+
+    public void updateChart(List<DataPoint> data, String title) {
+        DefaultPieDataset dataset = new DefaultPieDataset();
+        for (DataPoint dataPoint : data) {
+            dataset.setValue(dataPoint.getName(), dataPoint.getValue());
+        }
+        PiePlot plot = (PiePlot) chart.getPlot();
+        plot.setDataset(dataset);
+        chart.setTitle(title);
+        chartPanel.repaint();
+    }
 }

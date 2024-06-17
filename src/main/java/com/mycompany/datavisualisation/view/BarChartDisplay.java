@@ -6,39 +6,45 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-
 import javax.swing.*;
-import java.awt.*;
 import java.util.List;
 
-public class BarChartDisplay {
-    public static void displayBarChart(JInternalFrame internalFrame, DataVisualModel model) {
-        // Create the bar chart dataset
+public class BarChartDisplay extends JPanel {
+    private DataVisualModel model;
+    private JFreeChart chart;
+    private ChartPanel chartPanel;
+
+    public BarChartDisplay(DataVisualModel model) {
+        this.model = model;
+        initUI();
+    }
+
+    private void initUI() {
+        chart = createChart();
+        chartPanel = new ChartPanel(chart);
+        add(chartPanel);
+    }
+
+    private JFreeChart createChart() {
+        JFreeChart barChart = ChartFactory.createBarChart(
+                "Bar Chart",
+                "Name",
+                "Value",
+                new DefaultCategoryDataset(),
+                PlotOrientation.VERTICAL,
+                true, true, false);
+        return barChart;
+    }
+
+    public void updateChart(List<DataPoint> data, String title) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        List<DataPoint> data = model.getData();
-        for (DataPoint point : data) {
-            dataset.setValue(point.getValue(), point.getName(), "");
+        for (DataPoint dataPoint : data) {
+            dataset.addValue(dataPoint.getValue(), "Data", dataPoint.getName());
         }
-
-        // Create the bar chart
-        JFreeChart chart = ChartFactory.createBarChart(
-            "Data Visualization",
-            "Categories",
-            "Values",
-            dataset,
-            PlotOrientation.VERTICAL,
-            true,
-            true,
-            false
-        );
-
-        // Add the chart to the internal frame
-        ChartPanel chartPanel = new ChartPanel(chart);
-        chartPanel.setPreferredSize(new Dimension(600, 400));
-        internalFrame.getContentPane().add(chartPanel, BorderLayout.CENTER);
-        internalFrame.setVisible(true);
+        chart.getCategoryPlot().setDataset(dataset);
+        chart.setTitle(title);
+        chartPanel.repaint();
     }
 }
