@@ -8,13 +8,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mycompany.datavisualisation.controller.DataVisualController;
+import com.mycompany.datavisualisation.view.*;
+
 public class DataVisualModel {
     private List<DataPoint> data;
+    private DataVisualController controller;
 
-    public DataVisualModel() {
-        data = new ArrayList<>();
-        loadData();
-    }
+
+    public DataVisualModel(DataVisualController controller) {
+    data = new ArrayList<>();
+    this.controller = controller;
+    loadData();
+}
 
     private void loadData() {
         try (BufferedReader reader = new BufferedReader(new FileReader("data.csv"))) {
@@ -35,7 +41,13 @@ public class DataVisualModel {
     public void addData(String name, double value) {
         data.add(new DataPoint(name, value));
         saveData();
+    
+        // Update the data display and charts
+        DataDisplay.displayData(controller.getView().jInternalFrame1);
+        PieChartDisplay.displayPieChart(controller.getView().jInternalFrame1, this);
+        BarChartDisplay.displayBarChart(controller.getView().jInternalFrame1, this);
     }
+    
 
     private void saveData() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("data.csv"))) {

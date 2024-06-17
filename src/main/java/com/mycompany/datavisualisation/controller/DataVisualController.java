@@ -14,10 +14,11 @@ public class DataVisualController {
     private DataVisualModel model;
 
     public DataVisualController() {
-        model = new DataVisualModel();
+        model = new DataVisualModel(this);
         view = new DataVisualView(this, model);
         view.setVisible(true);
     }
+    
 
 
     public DataVisualView getView() {
@@ -38,7 +39,7 @@ public class DataVisualController {
     }
     
     public void handleBarChartButtonClick() {
-        BarChartDisplay.displayBarChart(view.jInternalFrame1, model);
+        BarChartDisplay.displayBarChart(view.jInternalFrame1,model);
     }
     
 }
