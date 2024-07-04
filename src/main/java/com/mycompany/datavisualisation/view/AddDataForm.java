@@ -69,31 +69,49 @@ public class AddDataForm extends JDialog {
                 Path dataCsvPath = Paths.get("./uploads/data.csv");
                 if (Files.exists(dataCsvPath)) {
                     // Append data to existing file
-                    controller.getModel().addData(name, value);
+                    appendDataToFile(name, value, dataCsvPath);
                 } else {
                     // Create new file and add data
-                    File uploadsFolder = new File("./uploads");
-                    if (!uploadsFolder.exists()) {
-                        uploadsFolder.mkdir();
-                    }
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(dataCsvPath.toFile()))) {
-                        writer.write(name + "," + value);
-                        writer.newLine();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                        JOptionPane.showMessageDialog(this, "Error saving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+                    createNewDataFile(name, value, dataCsvPath);
                 }
+
+                // Notify controller to refresh charts
+                controller.handlePreviewDataButtonClick();
 
                 // Notify user and close form
                 JOptionPane.showMessageDialog(this, "Data added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-                controller.handlePreviewDataButtonClick();
                 dispose();
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Please enter a valid numeric value.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(this, "Please enter a name and a value.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void appendDataToFile(String name, double value, Path filePath) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toFile(), true))) {
+            writer.write(name + "," + value);
+            writer.newLine();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error saving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void createNewDataFile(String name, double value, Path filePath) {
+        try {
+            // Create the uploads directory if it doesn't exist
+            Files.createDirectories(filePath.getParent());
+
+            // Create the data.csv file and add initial data
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath.toFile()))) {
+                writer.write(name + "," + value);
+                writer.newLine();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error creating data file: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -114,10 +132,7 @@ public class AddDataForm extends JDialog {
                 Path targetPath = Paths.get("./uploads/data.csv");
 
                 // Check if /uploads folder exists, create if it doesn't
-                File uploadsFolder = new File("./uploads");
-                if (!uploadsFolder.exists()) {
-                    uploadsFolder.mkdir();
-                }
+                Files.createDirectories(targetPath.getParent());
 
                 // If data.csv exists, append imported data to it
                 if (Files.exists(targetPath)) {
@@ -134,6 +149,9 @@ public class AddDataForm extends JDialog {
                     JOptionPane.showMessageDialog(this, "The CSV file must have exactly two columns (name, value).", "Error", JOptionPane.ERROR_MESSAGE);
                     Files.deleteIfExists(targetPath); // Delete the file if validation fails
                 }
+
+                // Notify controller to refresh charts
+                controller.handlePreviewDataButtonClick();
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, "Error importing data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
