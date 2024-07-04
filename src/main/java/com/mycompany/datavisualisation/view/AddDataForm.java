@@ -81,25 +81,31 @@ public class AddDataForm extends JDialog {
             JOptionPane.showMessageDialog(this, "Please enter a name and a value.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
     private void importData() {
         JFileChooser fileChooser = new JFileChooser();
         int option = fileChooser.showOpenDialog(this);
-
+    
         if (option == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+    
+            // Check if the selected file has .csv extension
+            if (!selectedFile.getName().toLowerCase().endsWith(".csv")) {
+                JOptionPane.showMessageDialog(this, "Only .csv files are supported.", "Error", JOptionPane.ERROR_MESSAGE);
+                return; // Exit method if file is not a .csv
+            }
+    
             try {
-                File selectedFile = fileChooser.getSelectedFile();
                 Path targetPath = Paths.get("./uploads/data.csv"); // Path to save the imported data
-
+    
                 // Check if /uploads folder exists, create if it doesn't
                 File uploadsFolder = new File("./uploads");
                 if (!uploadsFolder.exists()) {
                     uploadsFolder.mkdir();
                 }
-
+    
                 // Copy the selected file to the target path (/uploads/data.csv)
                 Files.copy(selectedFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-
+    
                 // Validate the imported CSV file
                 if (validateCSV(targetPath)) {
                     JOptionPane.showMessageDialog(this, "File imported successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -112,7 +118,7 @@ public class AddDataForm extends JDialog {
             }
         }
     }
-
+    
     private boolean validateCSV(Path filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath.toFile()))) {
             String line;
@@ -126,4 +132,5 @@ public class AddDataForm extends JDialog {
             return false;
         }
     }
+    
 }
