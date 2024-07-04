@@ -13,11 +13,17 @@ import java.util.List;
 
 public class BarChartDisplay {
     public static void displayBarChart(JInternalFrame internalFrame, DataVisualModel model) {
+        List<DataPoint> data = model.getData();
+
+        if (data.isEmpty()) {
+            JOptionPane.showMessageDialog(internalFrame, "No data available to display.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
         internalFrame.getContentPane().removeAll(); // Clear existing content
 
         // Create the bar chart dataset
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        List<DataPoint> data = model.getData();
         for (DataPoint point : data) {
             dataset.setValue(point.getValue(), point.getName(), "");
         }
@@ -25,7 +31,7 @@ public class BarChartDisplay {
         // Create the bar chart
         JFreeChart chart = ChartFactory.createBarChart(
             "Bar Chart - Data Visualization",
-            "Categories",
+            "Names",
             "Values",
             dataset
         );

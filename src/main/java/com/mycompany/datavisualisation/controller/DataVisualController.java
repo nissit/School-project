@@ -1,12 +1,11 @@
 package com.mycompany.datavisualisation.controller;
 
-import com.mycompany.datavisualisation.model.DataPoint;
 import com.mycompany.datavisualisation.model.DataVisualModel;
 import com.mycompany.datavisualisation.view.*;
 
 import javax.swing.*;
-
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class DataVisualController {
     private DataVisualView view;
@@ -32,14 +31,26 @@ public class DataVisualController {
     }
 
     public void handlePreviewDataButtonClick() {
-        DataDisplay.displayData(view.jInternalFrame1);
+        if (Files.exists(Paths.get("./uploads/data.csv"))) {
+            DataDisplay.displayData(view.jInternalFrame1);
+        } else {
+            JOptionPane.showMessageDialog(view, "No data available.", "Info", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     public void handlePieChartButtonClick() {
-        PieChartDisplay.displayPieChart(view.jInternalFrame1, model);
+        if (Files.exists(Paths.get("./uploads/data.csv"))) {
+            PieChartDisplay.displayPieChart(view.jInternalFrame1, model);
+        } else {
+            JOptionPane.showMessageDialog(view, "No data available.", "Info", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     public void handleBarChartButtonClick() {
-        BarChartDisplay.displayBarChart(view.jInternalFrame1, model);
+        if (Files.exists(Paths.get("./uploads/data.csv"))) {
+            BarChartDisplay.displayBarChart(view.jInternalFrame1, model);
+        } else {
+            JOptionPane.showMessageDialog(view, "No data available.", "Info", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 }
