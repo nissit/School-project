@@ -5,7 +5,6 @@ import com.mycompany.datavisualisation.model.DataVisualModel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
@@ -14,29 +13,31 @@ import java.util.List;
 
 public class BarChartDisplay {
     public static void displayBarChart(JInternalFrame internalFrame, DataVisualModel model) {
+        // Clear existing content of the internal frame
+        internalFrame.getContentPane().removeAll();
+
         // Create the bar chart dataset
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         List<DataPoint> data = model.getData();
         for (DataPoint point : data) {
-            dataset.setValue(point.getValue(), "", point.getName());
+            dataset.setValue(point.getValue(), point.getName(), "");
         }
-    
+
         // Create the bar chart
         JFreeChart chart = ChartFactory.createBarChart(
             "Bar Chart - Data Visualization",
             "Categories",
             "Values",
-            dataset,
-            PlotOrientation.VERTICAL,
-            true,
-            true,
-            false
+            dataset
         );
-    
-        // Add the chart to the internal frame
+
+        // Create the chart panel and add it to the internal frame
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(600, 400));
-        internalFrame.getContentPane().add(chartPanel, BorderLayout.CENTER);
+        internalFrame.setContentPane(chartPanel);
+
+        // Pack and set internal frame visible
+        internalFrame.pack();
         internalFrame.setVisible(true);
     }
 }
