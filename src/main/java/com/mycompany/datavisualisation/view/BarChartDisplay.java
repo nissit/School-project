@@ -13,8 +13,7 @@ import java.util.List;
 
 public class BarChartDisplay {
     public static void displayBarChart(JInternalFrame internalFrame, DataVisualModel model) {
-        // Clear existing content of the internal frame
-        internalFrame.getContentPane().removeAll();
+        internalFrame.getContentPane().removeAll(); // Clear existing content
 
         // Create the bar chart dataset
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();

@@ -13,8 +13,7 @@ import java.util.List;
 
 public class PieChartDisplay {
     public static void displayPieChart(JInternalFrame internalFrame, DataVisualModel model) {
-        // Clear existing content of the internal frame
-        internalFrame.getContentPane().removeAll();
+        internalFrame.getContentPane().removeAll(); // Clear existing content
 
         // Create the pie chart dataset
         DefaultPieDataset dataset = new DefaultPieDataset();

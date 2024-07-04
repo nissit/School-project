@@ -4,7 +4,6 @@ import com.mycompany.datavisualisation.controller.DataVisualController;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.*;
 import java.nio.file.*;
 
@@ -70,7 +69,7 @@ public class AddDataForm extends JDialog {
                 Path dataCsvPath = Paths.get("./uploads/data.csv");
                 if (Files.exists(dataCsvPath)) {
                     // Append data to existing file
-                    controller.getModel().appendData(name, value);
+                    controller.getModel().addData(name, value);
                 } else {
                     // Create new file and add data
                     File uploadsFolder = new File("./uploads");
@@ -101,25 +100,25 @@ public class AddDataForm extends JDialog {
     private void importData() {
         JFileChooser fileChooser = new JFileChooser();
         int option = fileChooser.showOpenDialog(this);
-    
+
         if (option == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-    
+
             // Check if the selected file has .csv extension
             if (!selectedFile.getName().toLowerCase().endsWith(".csv")) {
                 JOptionPane.showMessageDialog(this, "Only .csv files are supported.", "Error", JOptionPane.ERROR_MESSAGE);
                 return; // Exit method if file is not a .csv
             }
-    
+
             try {
                 Path targetPath = Paths.get("./uploads/data.csv");
-    
+
                 // Check if /uploads folder exists, create if it doesn't
                 File uploadsFolder = new File("./uploads");
                 if (!uploadsFolder.exists()) {
                     uploadsFolder.mkdir();
                 }
-    
+
                 // If data.csv exists, append imported data to it
                 if (Files.exists(targetPath)) {
                     appendImportedData(selectedFile, targetPath);
@@ -127,7 +126,7 @@ public class AddDataForm extends JDialog {
                     // Copy the selected file to the target path (/uploads/data.csv)
                     Files.copy(selectedFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
                 }
-    
+
                 // Validate the imported CSV file (optional)
                 if (validateCSV(targetPath)) {
                     JOptionPane.showMessageDialog(this, "File imported successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -140,11 +139,11 @@ public class AddDataForm extends JDialog {
             }
         }
     }
-    
+
     private void appendImportedData(File importedFile, Path targetPath) throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(importedFile));
              BufferedWriter writer = new BufferedWriter(new FileWriter(targetPath.toFile(), true))) {
-    
+
             String line;
             while ((line = reader.readLine()) != null) {
                 // Append each line to the existing data.csv file
@@ -153,7 +152,7 @@ public class AddDataForm extends JDialog {
             }
         }
     }
-    
+
     private boolean validateCSV(Path filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath.toFile()))) {
             String line;
