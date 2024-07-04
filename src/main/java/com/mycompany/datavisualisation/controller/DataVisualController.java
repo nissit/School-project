@@ -1,13 +1,12 @@
 package com.mycompany.datavisualisation.controller;
 
+import com.mycompany.datavisualisation.model.DataPoint;
 import com.mycompany.datavisualisation.model.DataVisualModel;
-import com.mycompany.datavisualisation.view.AddDataForm;
-import com.mycompany.datavisualisation.view.BarChartDisplay;
-import com.mycompany.datavisualisation.view.DataDisplay;
-import com.mycompany.datavisualisation.view.DataVisualView;
-import com.mycompany.datavisualisation.view.PieChartDisplay;
+import com.mycompany.datavisualisation.view.*;
 
 import javax.swing.*;
+
+import java.util.List;
 
 public class DataVisualController {
     private DataVisualView view;

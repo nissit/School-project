@@ -6,9 +6,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,12 +18,12 @@ public class BarChartDisplay {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         List<DataPoint> data = model.getData();
         for (DataPoint point : data) {
-            dataset.setValue(point.getValue(), point.getName(), "");
+            dataset.setValue(point.getValue(), "", point.getName());
         }
-
+    
         // Create the bar chart
         JFreeChart chart = ChartFactory.createBarChart(
-            "Data Visualization",
+            "Bar Chart - Data Visualization",
             "Categories",
             "Values",
             dataset,
@@ -34,7 +32,7 @@ public class BarChartDisplay {
             true,
             false
         );
-
+    
         // Add the chart to the internal frame
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(600, 400));
