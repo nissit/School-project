@@ -110,7 +110,7 @@ public class AddDataForm extends JDialog {
                 if (validateCSV(targetPath)) {
                     JOptionPane.showMessageDialog(this, "File imported successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(this, "The CSV file must have exactly two rows.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "The CSV file must have exactly two columns (name, value).", "Error", JOptionPane.ERROR_MESSAGE);
                     Files.deleteIfExists(targetPath); // Delete the file if validation fails
                 }
             } catch (IOException e) {
@@ -122,11 +122,13 @@ public class AddDataForm extends JDialog {
     private boolean validateCSV(Path filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath.toFile()))) {
             String line;
-            int rowCount = 0;
             while ((line = reader.readLine()) != null) {
-                rowCount++;
+                String[] parts = line.split(",");
+                if (parts.length != 2) {
+                    return false; // Return false if any row doesn't have exactly two columns
+                }
             }
-            return rowCount == 2; // Validate if the file has exactly two rows
+            return true; // Return true if all rows have exactly two columns
         } catch (IOException e) {
             e.printStackTrace();
             return false;
