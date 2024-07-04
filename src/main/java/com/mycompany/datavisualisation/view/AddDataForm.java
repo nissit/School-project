@@ -58,10 +58,10 @@ public class AddDataForm extends JDialog {
     }
 
     private void addData() {
-        String name = nameField.getText();
-        String valueStr = valueField.getText();
+        String name = nameField.getText().trim();
+        String valueStr = valueField.getText().trim();
 
-        if (!name.isEmpty() && !valueStr.isEmpty()) {
+        if (isValidName(name) && isValidDouble(valueStr)) {
             try {
                 double value = Double.parseDouble(valueStr);
 
@@ -85,7 +85,21 @@ public class AddDataForm extends JDialog {
                 JOptionPane.showMessageDialog(this, "Please enter a valid numeric value.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Please enter a name and a value.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please enter a valid name and value.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private boolean isValidName(String name) {
+        // Check if the name is not empty and contains at least one alphabetic character
+        return name != null && !name.isEmpty() && name.matches(".*[a-zA-Z]+.*");
+    }
+
+    private boolean isValidDouble(String valueStr) {
+        try {
+            Double.parseDouble(valueStr);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 
@@ -134,6 +148,12 @@ public class AddDataForm extends JDialog {
                 // Check if /uploads folder exists, create if it doesn't
                 Files.createDirectories(targetPath.getParent());
 
+                // Validate the imported CSV file before processing
+                if (!validateCSV(selectedFile.toPath())) {
+                    JOptionPane.showMessageDialog(this, "The CSV file must have exactly two columns (name, value) with appropriate types.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 // If data.csv exists, append imported data to it
                 if (Files.exists(targetPath)) {
                     appendImportedData(selectedFile, targetPath);
@@ -142,13 +162,7 @@ public class AddDataForm extends JDialog {
                     Files.copy(selectedFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
                 }
 
-                // Validate the imported CSV file (optional)
-                if (validateCSV(targetPath)) {
-                    JOptionPane.showMessageDialog(this, "File imported successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "The CSV file must have exactly two columns (name, value).", "Error", JOptionPane.ERROR_MESSAGE);
-                    Files.deleteIfExists(targetPath); // Delete the file if validation fails
-                }
+                JOptionPane.showMessageDialog(this, "File imported successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
 
                 // Notify controller to refresh charts
                 controller.handlePreviewDataButtonClick();
@@ -164,9 +178,16 @@ public class AddDataForm extends JDialog {
 
             String line;
             while ((line = reader.readLine()) != null) {
-                // Append each line to the existing data.csv file
-                writer.write(line);
-                writer.newLine();
+                // Validate each line before appending
+                String[] parts = line.split(",");
+                if (parts.length == 2 && isValidName(parts[0].trim()) && isValidDouble(parts[1].trim())) {
+                    String name = parts[0].trim();
+                    double value = Double.parseDouble(parts[1].trim());
+                    writer.write(name + "," + value);
+                    writer.newLine();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Invalid format in imported data: " + line, "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }
@@ -176,11 +197,11 @@ public class AddDataForm extends JDialog {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length != 2) {
-                    return false; // Return false if any row doesn't have exactly two columns
+                if (parts.length != 2 || !isValidName(parts[0].trim()) || !isValidDouble(parts[1].trim())) {
+                    return false; // Return false if any row doesn't have exactly two columns or valid types
                 }
             }
-            return true; // Return true if all rows have exactly two columns
+            return true; // Return true if all rows have exactly two columns and valid types
         } catch (IOException e) {
             e.printStackTrace();
             return false;
