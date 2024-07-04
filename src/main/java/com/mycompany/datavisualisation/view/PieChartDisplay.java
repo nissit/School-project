@@ -13,11 +13,17 @@ import java.util.List;
 
 public class PieChartDisplay {
     public static void displayPieChart(JInternalFrame internalFrame, DataVisualModel model) {
+        List<DataPoint> data = model.getData();
+
+        if (data.isEmpty()) {
+            JOptionPane.showMessageDialog(internalFrame, "No data available to display.", "Info", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
         internalFrame.getContentPane().removeAll(); // Clear existing content
 
         // Create the pie chart dataset
         DefaultPieDataset dataset = new DefaultPieDataset();
-        List<DataPoint> data = model.getData();
         for (DataPoint point : data) {
             dataset.setValue(point.getName(), point.getValue());
         }
