@@ -5,22 +5,15 @@ import com.mycompany.datavisualisation.controller.DataVisualController;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.io.*;
+import java.nio.file.*;
 
 public class AddDataForm extends JDialog {
     private JTextField nameField;
     private JTextField valueField;
     private JButton addButton;
     private JButton cancelButton;
-    private JButton importButton; // New button for importing CSV data
+    private JButton importButton;
 
     private DataVisualController controller;
 
@@ -33,10 +26,10 @@ public class AddDataForm extends JDialog {
         setTitle("Add Data");
         setModalityType(ModalityType.APPLICATION_MODAL);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(300, 200); // Adjusted size to fit the new button
+        setSize(300, 200);
         setLocationRelativeTo(null);
 
-        JPanel mainPanel = new JPanel(new GridLayout(4, 2, 10, 10)); // Increased rows for the new button
+        JPanel mainPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JLabel nameLabel = new JLabel("Name:");
@@ -48,8 +41,8 @@ public class AddDataForm extends JDialog {
         addButton = new JButton("Add");
         addButton.addActionListener(e -> addData());
 
-        importButton = new JButton("Import Data"); // New button
-        importButton.addActionListener(e -> importData()); // ActionListener for import button
+        importButton = new JButton("Import Data");
+        importButton.addActionListener(e -> importData());
 
         cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(e -> dispose());
@@ -59,7 +52,7 @@ public class AddDataForm extends JDialog {
         mainPanel.add(valueLabel);
         mainPanel.add(valueField);
         mainPanel.add(addButton);
-        mainPanel.add(importButton); // Add import button to panel
+        mainPanel.add(importButton);
         mainPanel.add(cancelButton);
 
         getContentPane().add(mainPanel, BorderLayout.CENTER);
@@ -67,20 +60,44 @@ public class AddDataForm extends JDialog {
 
     private void addData() {
         String name = nameField.getText();
-        String value = valueField.getText();
+        String valueStr = valueField.getText();
 
-        if (!name.isEmpty() && !value.isEmpty()) {
+        if (!name.isEmpty() && !valueStr.isEmpty()) {
             try {
-                // Add data logic here
+                double value = Double.parseDouble(valueStr);
+
+                // Check if uploads/data.csv exists
+                Path dataCsvPath = Paths.get("./uploads/data.csv");
+                if (Files.exists(dataCsvPath)) {
+                    // Append data to existing file
+                    controller.getModel().appendData(name, value);
+                } else {
+                    // Create new file and add data
+                    File uploadsFolder = new File("./uploads");
+                    if (!uploadsFolder.exists()) {
+                        uploadsFolder.mkdir();
+                    }
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(dataCsvPath.toFile()))) {
+                        writer.write(name + "," + value);
+                        writer.newLine();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(this, "Error saving data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
+                // Notify user and close form
+                JOptionPane.showMessageDialog(this, "Data added successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 controller.handlePreviewDataButtonClick();
                 dispose();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error adding data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid numeric value.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             JOptionPane.showMessageDialog(this, "Please enter a name and a value.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     private void importData() {
         JFileChooser fileChooser = new JFileChooser();
         int option = fileChooser.showOpenDialog(this);
@@ -95,7 +112,7 @@ public class AddDataForm extends JDialog {
             }
     
             try {
-                Path targetPath = Paths.get("./uploads/data.csv"); // Path to save the imported data
+                Path targetPath = Paths.get("./uploads/data.csv");
     
                 // Check if /uploads folder exists, create if it doesn't
                 File uploadsFolder = new File("./uploads");
@@ -103,10 +120,15 @@ public class AddDataForm extends JDialog {
                     uploadsFolder.mkdir();
                 }
     
-                // Copy the selected file to the target path (/uploads/data.csv)
-                Files.copy(selectedFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+                // If data.csv exists, append imported data to it
+                if (Files.exists(targetPath)) {
+                    appendImportedData(selectedFile, targetPath);
+                } else {
+                    // Copy the selected file to the target path (/uploads/data.csv)
+                    Files.copy(selectedFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+                }
     
-                // Validate the imported CSV file
+                // Validate the imported CSV file (optional)
                 if (validateCSV(targetPath)) {
                     JOptionPane.showMessageDialog(this, "File imported successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -115,6 +137,19 @@ public class AddDataForm extends JDialog {
                 }
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, "Error importing data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    private void appendImportedData(File importedFile, Path targetPath) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader(importedFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(targetPath.toFile(), true))) {
+    
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Append each line to the existing data.csv file
+                writer.write(line);
+                writer.newLine();
             }
         }
     }
@@ -134,5 +169,4 @@ public class AddDataForm extends JDialog {
             return false;
         }
     }
-    
 }

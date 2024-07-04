@@ -19,9 +19,12 @@ public class DataVisualController {
         view.setVisible(true);
     }
 
-
     public DataVisualView getView() {
         return view;
+    }
+
+    public DataVisualModel getModel() {
+        return model;
     }
 
     public void handleAddDataButtonClick() {
@@ -32,13 +35,12 @@ public class DataVisualController {
     public void handlePreviewDataButtonClick() {
         DataDisplay.displayData(view.jInternalFrame1);
     }
-    
+
     public void handlePieChartButtonClick() {
         PieChartDisplay.displayPieChart(view.jInternalFrame1, model);
     }
-    
+
     public void handleBarChartButtonClick() {
         BarChartDisplay.displayBarChart(view.jInternalFrame1, model);
     }
-    
 }

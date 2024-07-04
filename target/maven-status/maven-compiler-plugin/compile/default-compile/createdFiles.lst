@@ -1,6 +1,9 @@
-com\mycompany\datavisualisation\DataVisual$3.class
-com\mycompany\datavisualisation\DataVisual$1.class
-com\mycompany\datavisualisation\DataVisual.class
-com\mycompany\datavisualisation\DataVisual$2.class
-com\mycompany\datavisualisation\DataVisual$4.class
-com\mycompany\datavisualisation\Functionalities.class
+com/mycompany/datavisualisation/view/AddDataForm.class
+com/mycompany/datavisualisation/view/PieChartDisplay.class
+com/mycompany/datavisualisation/view/BarChartDisplay.class
+com/mycompany/datavisualisation/model/DataPoint.class
+com/mycompany/datavisualisation/model/DataVisualModel.class
+com/mycompany/datavisualisation/view/DataVisualView.class
+com/mycompany/datavisualisation/view/DataDisplay.class
+com/mycompany/datavisualisation/DataVisualisationApp.class
+com/mycompany/datavisualisation/controller/DataVisualController.class
