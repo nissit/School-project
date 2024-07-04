@@ -13,6 +13,7 @@ public class DataVisualView extends JFrame {
     private JButton jButton2;
     private JButton jButton3;
     private JButton jButton4;
+    private JButton jButton5; // Reset button
     public JInternalFrame jInternalFrame1;
     private DataVisualController controller;
     private DataVisualModel model;
@@ -42,10 +43,13 @@ public class DataVisualView extends JFrame {
         jButton3.addActionListener(e -> controller.handlePieChartButtonClick());
         jButton4 = new JButton("Bar Chart");
         jButton4.addActionListener(e -> controller.handleBarChartButtonClick());
+        jButton5 = new JButton("Reset"); // Add the Reset button
+        jButton5.addActionListener(e -> controller.handleResetButtonClick());
         topPanel.add(jButton1);
         topPanel.add(jButton2);
         topPanel.add(jButton3);
         topPanel.add(jButton4);
+        topPanel.add(jButton5); // Add the Reset button to the top panel
 
         // Internal frame to display data/charts
         jInternalFrame1 = new JInternalFrame("Data/Charts", true, true, true, true);

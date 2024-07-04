@@ -1,6 +1,9 @@
 package com.mycompany.datavisualisation.model;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,8 +12,12 @@ public class DataVisualModel {
 
     public DataVisualModel() {
         data = new ArrayList<>();
-        loadData();
+        Path dataFilePath = Paths.get("./uploads/data.csv");
+        if (Files.exists(dataFilePath)) {
+            loadData();
+        }
     }
+
 
     private void loadData() {
         try (BufferedReader reader = new BufferedReader(new FileReader("./uploads/data.csv"))) {
@@ -32,22 +39,28 @@ public class DataVisualModel {
             e.printStackTrace();
         }
     }
-
-    public void addData(String name, double value) {
+    
+    public boolean addData(String name, double value) {
         data.add(new DataPoint(name, value));
-        appendDataToFile(name, value);
+        return appendDataToFile(name, value);
     }
 
-    private void appendDataToFile(String name, double value) {
+    private boolean appendDataToFile(String name, double value) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("./uploads/data.csv", true))) {
             writer.write(name + "," + value);
             writer.newLine();
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
     public List<DataPoint> getData() {
         return data;
+    }
+
+    public void clearData() {
+        data.clear();
     }
 }
