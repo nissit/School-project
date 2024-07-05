@@ -1,2 +1,9 @@
-C:\Users\Miss T\Documents\NetBeansProjects\DataVisualisation\src\main\java\com\mycompany\datavisualisation\DataVisual.java
-C:\Users\Miss T\Documents\NetBeansProjects\DataVisualisation\src\main\java\com\mycompany\datavisualisation\Functionalities.java
+/home/sk/personal/School-project/src/main/java/com/mycompany/datavisualisation/controller/DataVisualController.java
+/home/sk/personal/School-project/src/main/java/com/mycompany/datavisualisation/view/BarChartDisplay.java
+/home/sk/personal/School-project/src/main/java/com/mycompany/datavisualisation/model/DataPoint.java
+/home/sk/personal/School-project/src/main/java/com/mycompany/datavisualisation/view/DataDisplay.java
+/home/sk/personal/School-project/src/main/java/com/mycompany/datavisualisation/view/AddDataForm.java
+/home/sk/personal/School-project/src/main/java/com/mycompany/datavisualisation/view/DataVisualView.java
+/home/sk/personal/School-project/src/main/java/com/mycompany/datavisualisation/model/DataVisualModel.java
+/home/sk/personal/School-project/src/main/java/com/mycompany/datavisualisation/view/PieChartDisplay.java
+/home/sk/personal/School-project/src/main/java/com/mycompany/datavisualisation/DataVisualisationApp.java
